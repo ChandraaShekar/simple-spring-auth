@@ -18,6 +18,7 @@ public class UserController {
 
     @Autowired
     private UserRegistery userRegistery;
+    @Autowired
     private PasswordService passwordService;
 
     @GetMapping("/v1/api/get-users")

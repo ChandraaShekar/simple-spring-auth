@@ -8,19 +8,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @SpringBootApplication(exclude = SecurityAutoConfiguration.class)
 public class SimpleAuthApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(SimpleAuthApplication.class, args);
-	}
-
-	@Bean
-	CommandLineRunner commandLineRunner(UserRegistery userRegistery) {
-		return args -> {
-			System.out.println(userRegistery.findAll());
-		};
 	}
 
 }
