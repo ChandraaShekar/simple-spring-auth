@@ -5,16 +5,20 @@ import com.csr.simpleauth.registery.UserRegistery;
 import com.csr.simpleauth.requestDataTypes.AuthRequest;
 import com.csr.simpleauth.requestDataTypes.RegisterRequestType;
 import com.csr.simpleauth.responseDataType.UserResponse;
+import com.csr.simpleauth.services.PasswordService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
 
 @RestController
 public class UserController {
 
     @Autowired
     private UserRegistery userRegistery;
+    private PasswordService passwordService;
 
     @GetMapping("/v1/api/get-users")
     public List<User> getUsers(){
@@ -23,12 +27,13 @@ public class UserController {
 
     @PostMapping("/v1/api/register")
     public User register(@RequestBody RegisterRequestType registerUserInfo){
-
+//        System.out.println(("Hello"));
+        String hashedPassword = passwordService.hashPassword(registerUserInfo.getPassword());
         User user = new User(
                 registerUserInfo.getName(),
                 registerUserInfo.getEmail(),
                 registerUserInfo.getAge(),
-                registerUserInfo.getPassword()
+                hashedPassword
         );
         System.out.println(registerUserInfo.toString());
         return userRegistery.save(user);
@@ -36,9 +41,13 @@ public class UserController {
 
     @PostMapping("/v1/api/login")
     public UserResponse login(@RequestBody AuthRequest req){
+
         User user = userRegistery.findByEmail(req.getEmail());
-        if(user != null){
-            if(user.getPassword().equals(req.getPassword())){
+        Boolean isUserFound = user != null;
+        Boolean isPasswordCorrect = passwordService.verifyPassword(req.getPassword(), user.getPassword());
+
+        if(isUserFound){
+            if(isPasswordCorrect){
                 return new UserResponse(
                         "Found the user",
                         200,
